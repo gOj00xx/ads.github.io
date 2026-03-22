@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CloudFlare Secure Gateway | Edge Protection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0a0c10 0%, #1a1f2e 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        /* Cloudflare-style navbar */
+        .navbar {
+            background: rgba(15, 25, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f38020, #faa423);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #0a0c10;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #faa423);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stats-panel {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            font-family: monospace;
+            border: 1px solid rgba(244, 128, 32, 0.3);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(243, 128, 32, 0.1), rgba(0, 0, 0, 0.5));
+            border-radius: 2rem;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(243, 128, 32, 0.3);
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #faa423, #f38020);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Feature Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(15, 25, 35, 0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(243, 128, 32, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .feature-card h3 {
+            color: #faa423;
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .feature-card p {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* Technical Section */
+        .technical {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .technical h2 {
+            color: #faa423;
+            margin-bottom: 1rem;
+        }
+
+        .technical pre {
+            background: #0a0c10;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            color: #86efac;
+            margin: 1rem 0;
+        }
+
+        code {
+            background: #1e293b;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            color: #faa423;
+        }
+
+        .request-counter {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: #0a0c10;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            border: 1px solid #f38020;
+            z-index: 999;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 2rem;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">CF</div>
+                <div class="logo-text">CloudFlare Secure Gateway</div>
+            </div>
+            <div class="stats-panel" id="statsPanel">
+                <span>🛡️ EDGE PROTECTION ACTIVE</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContent">
+        <div class="hero">
+            <h1>Enterprise-Grade Edge Security</h1>
+            <p>CloudFlare-powered DDoS Mitigation | Web Application Firewall | Global Anycast Network</p>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>🛡️ DDoS Protection Layer</h3>
+                <p>Automatic mitigation of volumetric, protocol, and application-layer DDoS attacks. L3-L7 protection with 200+ Tbps network capacity.</p>
+            </div>
+            <div class="feature-card">
+                <h3>⚡ Global Anycast Network</h3>
+                <p>320+ cities worldwide with 50ms average latency. Traffic automatically routes to nearest data center for optimal performance.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🔒 Web Application Firewall</h3>
+                <p>Managed WAF ruleset with OWASP Top 10 coverage. Custom rule engine with rate limiting and bot mitigation.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📊 Real-time Analytics</h3>
+                <p>Granular traffic analysis, security events logging, and performance monitoring via GraphQL API and dashboard.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🚀 CDN & Optimization</h3>
+                <p>Static asset caching, image optimization, automatic minification, and Argo Smart Routing for dynamic content.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🔐 SSL/TLS Everywhere</h3>
+                <p>Universal SSL, dedicated certificates, HSTS preload, and TLS 1.3 support with automated certificate management.</p>
+            </div>
+        </div>
+
+        <div class="technical">
+            <h2>📡 Technical Architecture Overview</h2>
+            <p>CloudFlare operates one of the world's largest global networks, acting as a reverse proxy between visitors and origin servers. Every request passes through our edge network where security policies, performance optimizations, and caching rules are applied before forwarding to origin.</p>
+            
+            <pre>
+┌─────────────┐    ┌──────────────────────────────┐    ┌─────────────┐
+│   Visitor   │───▶│  CloudFlare Edge Network     │───▶│   Origin    │
+│   Request   │    │  • DDoS Filter               │    │   Server    │
+└─────────────┘    │  • WAF Rules                 │    │  (Your Host)│
+                   │  • Rate Limiting              │    └─────────────┘
+                   │  • Cache Logic                │
+                   │  • SSL Termination            │
+                   └──────────────────────────────┘</pre>
+
+            <h2>🚦 Rate Limiting Configuration</h2>
+            <p>Default rate limiting rules applied at edge level to prevent abuse and ensure service stability:</p>
+            <pre>
+Rule 1: 10,000 requests per minute per IP (Enterprise tier)
+Rule 2: 500 requests per 10 seconds (challenge mode)
+Rule 3: 100 requests per second (block excessive bursts)</pre>
+
+            <h2>🌐 Anycast Network Map</h2>
+            <p>Traffic is routed to the nearest of 320+ data centers across 120+ countries. Major PoPs include: Ashburn, Frankfurt, London, Tokyo, Singapore, São Paulo, Sydney, Mumbai, and Johannesburg.</p>
+            
+            <h2>🔧 Edge Computing (Workers)</h2>
+            <p>Deploy serverless JavaScript functions at edge locations with sub-10ms cold starts. Use cases include A/B testing, request routing, authentication, and API aggregation.</p>
+        </div>
+
+        <footer>
+            <p>© 2025 CloudFlare, Inc. | Security-first infrastructure | <span id="requestCountDisplay">0</span> requests processed this session</p>
+        </footer>
+    </div>
+
+    <div class="request-counter" id="requestCounter">
+        📊 SESSION: <span id="sessionCount">0</span> / 10000
+    </div>
+
+    <script>
+        // STORAGE KEY
+        const STORAGE_KEY = 'cf_request_tracker';
+        const REQUEST_LIMIT = 10000;
+        const COOLDOWN_MS = 30000; // 30 detik tanpa request besar untuk reset
+
+        // Data structure
+        let requestData = {
+            count: 0,
+            lastRequestTime: Date.now(),
+            isBlocked: false,
+            blockedSince: null
+        };
+
+        // Load or initialize
+        function loadRequestData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    // Validasi struktur
+                    if (typeof parsed.count === 'number' && typeof parsed.lastRequestTime === 'number') {
+                        requestData = parsed;
+                        // Reset jika sudah lewat cooldown dan dalam status blocked
+                        const now = Date.now();
+                        if (requestData.isBlocked && requestData.blockedSince) {
+                            const blockedDuration = now - requestData.blockedSince;
+                            if (blockedDuration > COOLDOWN_MS && requestData.count < REQUEST_LIMIT) {
+                                requestData.isBlocked = false;
+                                requestData.blockedSince = null;
+                                saveRequestData();
+                            }
+                        }
+                        // Periodic reset jika tidak ada request dalam waktu lama dan belum mencapai limit
+                        const timeSinceLast = now - requestData.lastRequestTime;
+                        if (!requestData.isBlocked && timeSinceLast > COOLDOWN_MS && requestData.count > 0) {
+                            // Reset counter jika idle lama dan belum blocked
+                            requestData.count = 0;
+                            saveRequestData();
+                        }
+                    }
+                } catch(e) {}
+            }
+            updateDisplay();
+        }
+
+        function saveRequestData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(requestData));
+        }
+
+        function incrementRequest() {
+            const now = Date.now();
+            
+            // Jika sudah dalam status blocked
+            if (requestData.isBlocked) {
+                updateDisplay();
+                showServiceUnavailable();
+                return false;
+            }
+            
+            // Update last request time
+            requestData.lastRequestTime = now;
+            requestData.count++;
+            
+            // Cek limit
+            if (requestData.count >= REQUEST_LIMIT) {
+                requestData.isBlocked = true;
+                requestData.blockedSince = now;
+                saveRequestData();
+                updateDisplay();
+                showServiceUnavailable();
+                return false;
+            }
+            
+            saveRequestData();
+            updateDisplay();
+            showNormalContent();
+            return true;
+        }
+
+        function showServiceUnavailable() {
+            // Sembunyikan konten normal, tampilkan error 503 asli
+            const mainContent = document.getElementById('mainContent');
+            const navbar = document.querySelector('.navbar');
+            const footer = document.querySelector('footer');
+            
+            if (document.getElementById('serviceUnavailable')) return;
+            
+            if (mainContent) mainContent.style.display = 'none';
+            if (footer) footer.style.display = 'none';
+            
+            // Cek apakah sudah ada div error
+            let errorDiv = document.getElementById('serviceUnavailable');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'serviceUnavailable';
+                errorDiv.style.cssText = `
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #0a0c10;
+                    font-family: monospace;
+                `;
+                errorDiv.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="font-size: 6rem; font-weight: bold; color: #f38020;">503</div>
+                        <div style="font-size: 2rem; margin: 1rem 0; color: #e2e8f0;">Service Unavailable</div>
+                        <div style="color: #94a3b8; max-width: 500px; margin: 1rem auto;">
+                            The server is temporarily unable to service your request due to maintenance downtime or capacity problems. Please try again later.
+                        </div>
+                        <div style="margin-top: 2rem; font-size: 0.8rem; color: #475569;">
+                            Edge capacity limit reached | Retry-After: 30 seconds
+                        </div>
+                        <div style="margin-top: 2rem;">
+                            <button id="retryBtn" style="background: #f38020; border: none; padding: 0.75rem 1.5rem; border-radius: 2rem; color: #0a0c10; font-weight: bold; cursor: pointer;">Retry Connection</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+                
+                // Auto retry setelah cooldown
+                setTimeout(() => {
+                    checkAndRecover();
+                }, COOLDOWN_MS);
+                
+                // Manual retry
+                const retryBtn = document.getElementById('retryBtn');
+                if (retryBtn) {
+                    retryBtn.onclick = () => checkAndRecover();
+                }
+            }
+        }
+        
+        function checkAndRecover() {
+            const now = Date.now();
+            if (requestData.isBlocked && requestData.blockedSince) {
+                const blockedDuration = now - requestData.blockedSince;
+                if (blockedDuration >= COOLDOWN_MS) {
+                    // Reset status
+                    requestData.isBlocked = false;
+                    requestData.blockedSince = null;
+                    requestData.count = 0;
+                    requestData.lastRequestTime = now;
+                    saveRequestData();
+                    showNormalContent();
+                    updateDisplay();
+                } else {
+                    // Masih dalam cooldown, update timer display
+                    const remaining = Math.ceil((COOLDOWN_MS - blockedDuration) / 1000);
+                    const errorDiv = document.getElementById('serviceUnavailable');
+                    if (errorDiv) {
+                        const btn = errorDiv.querySelector('#retryBtn');
+                        if (btn) btn.textContent = `Try again in ${remaining}s`;
+                        setTimeout(checkAndRecover, 1000);
+                    }
+                }
+            } else {
+                showNormalContent();
+            }
+        }
+        
+        function showNormalContent() {
+            const mainContent = document.getElementById('mainContent');
+            const navbar = document.querySelector('.navbar');
+            const footer = document.querySelector('footer');
+            const errorDiv = document.getElementById('serviceUnavailable');
+            
+            if (mainContent) mainContent.style.display = 'block';
+            if (footer) footer.style.display = 'block';
+            if (navbar) navbar.style.display = 'block';
+            if (errorDiv) errorDiv.remove();
+        }
+        
+        function updateDisplay() {
+            const sessionSpan = document.getElementById('sessionCount');
+            const footerSpan = document.getElementById('requestCountDisplay');
+            if (sessionSpan) sessionSpan.textContent = requestData.count;
+            if (footerSpan) footerSpan.textContent = requestData.count;
+            
+            // Ubah warna jika mendekati limit
+            const counterDiv = document.querySelector('.request-counter');
+            if (counterDiv) {
+                if (requestData.count >= REQUEST_LIMIT * 0.9) {
+                    counterDiv.style.borderColor = '#ef4444';
+                    counterDiv.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                } else if (requestData.count >= REQUEST_LIMIT * 0.7) {
+                    counterDiv.style.borderColor = '#faa423';
+                } else {
+                    counterDiv.style.borderColor = '#f38020';
+                    counterDiv.style.backgroundColor = '#0a0c10';
+                }
+            }
+        }
+        
+        // Function untuk simulate request (bisa dipanggil dari console atau event)
+        window.simulateRequest = function() {
+            incrementRequest();
+        };
+        
+        // Intercept semua link internal untuk dihitung sebagai request
+        function setupRequestInterceptor() {
+            // Hitung setiap kali user mengklik link
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('a');
+                if (target && target.href && target.href.startsWith(window.location.origin)) {
+                    e.preventDefault();
+                    const success = incrementRequest();
+                    if (success) {
+                        window.location.href = target.href;
+                    }
+                }
+            });
+            
+            // Hitung setiap kali page dimuat
+            incrementRequest();
+        }
+        
+        // Auto-reset jika tidak ada request dalam waktu lama (interval check)
+        setInterval(function() {
+            const now = Date.now();
+            const timeSinceLast = now - requestData.lastRequestTime;
+            if (!requestData.isBlocked && timeSinceLast > COOLDOWN_MS && requestData.count > 0) {
+                requestData.count = 0;
+                saveRequestData();
+                updateDisplay();
+    }
+            // Jika dalam status blocked tapi sudah melewati cooldown
+            if (requestData.isBlocked && requestData.blockedSince) {
+                if ((now - requestData.blockedSince) >= COOLDOWN_MS) {
+                    requestData.isBlocked = false;
+                    requestData.blockedSince = null;
+                    requestData.count = 0;
+                    saveRequestData();
+                    showNormalContent();
+                    updateDisplay();
+                }
+            }
+        }, 5000);
+        
+        // Initialize
+        loadRequestData();
+        setupRequestInterceptor();
+        
+        // Expose untuk testing via console
+        window.requestTracker = {
+            getStatus: () => requestData,
+            reset: () => {
+                requestData = { count: 0, lastRequestTime: Date.now(), isBlocked: false, blockedSince: null };
+                saveRequestData();
+                updateDisplay();
+                showNormalContent();
+            },
+            simulateBurst: (count) => {
+                for(let i = 0; i < count; i++) {
+                    if(!incrementRequest()) break;
+                }
+            }
+        };
+    </script>
+</body>
+</html>
